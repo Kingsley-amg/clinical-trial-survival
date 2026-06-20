@@ -1,0 +1,246 @@
+---
+title: "Survival Analysis of a Randomised Cancer Trial"
+subtitle: "Does adjuvant chemotherapy delay recurrence and prolong survival in colon cancer?"
+author: "Kingsley Amegah"
+date: "`r format(Sys.Date(), '%B %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    theme: flatly
+    code_folding: hide
+    df_print: kable
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE,
+                      fig.width = 9, fig.height = 5.6, fig.align = "center")
+suppressMessages({
+  library(survival); library(survminer); library(dplyr); library(forcats)
+  library(broom); library(gtsummary); library(ggplot2); library(randomForestSRC)
+})
+theme_set(theme_minimal(base_size = 12))
+PAL <- c("#9ec7bd", "#e9b949", "#2a9d8f")   # Obs, Lev, Lev+5FU
+ACC <- "#2a9d8f"
+dat <- read.csv("data/colon_clean.csv", stringsAsFactors = TRUE)
+dat$rx <- factor(dat$rx, levels = c("Obs", "Lev", "Lev+5FU"))
+os  <- subset(dat, etype == 2)   # overall survival (death)
+rfs <- subset(dat, etype == 1)   # recurrence-free survival
+```
+
+# Background and question
+
+A central job of data science in health is to answer one question rigorously:
+**does a treatment actually work, and for whom?** The cleanest evidence comes
+from a randomised controlled trial (RCT), where patients are assigned to
+treatments by chance so the groups are comparable.
+
+This report analyses a real, published RCT: the **colon cancer adjuvant-therapy
+trial** (Moertel and colleagues). After surgery, **929 patients** with stage B
+or C colon cancer were randomly assigned to one of three arms:
+
+- **Obs**, observation only (the control),
+- **Lev**, levamisole,
+- **Lev+5FU**, levamisole plus fluorouracil.
+
+Two outcomes were followed over time: **recurrence** of the cancer and
+**death**. The analytical challenge is that many patients had not had the event
+by the end of follow-up (their times are *censored*), so ordinary averages do
+not work. This is what **survival analysis** is built for.
+
+# The data and randomisation check
+
+Because treatment was randomised, the arms should look similar at baseline. A
+balance table is the first thing a trial statistician checks.
+
+```{r baseline}
+os |>
+  select(rx, age, sex, nodes, node4, differ, extent, obstruct, perfor) |>
+  tbl_summary(by = rx,
+              label = list(age ~ "Age (years)", nodes ~ "Positive nodes",
+                           node4 ~ "Nodal burden", differ ~ "Differentiation",
+                           extent ~ "Local extent", obstruct ~ "Obstruction",
+                           perfor ~ "Perforation", sex ~ "Sex")) |>
+  add_p() |>
+  modify_header(label ~ "**Characteristic**") |>
+  modify_caption("**Baseline characteristics by treatment arm**") |>
+  as_kable()
+```
+
+The arms are well balanced: no baseline characteristic differs meaningfully
+across them (all p-values are large). That is exactly what randomisation should
+deliver, and it means any later difference in outcomes can be attributed to
+treatment rather than to sicker patients landing in one arm.
+
+# Kaplan-Meier survival curves
+
+The Kaplan-Meier estimator turns censored follow-up times into a survival curve:
+the share of patients still event-free as time passes. We compare arms with the
+**log-rank test**.
+
+## Overall survival (time to death)
+
+```{r km-os}
+fit_os <- survfit(Surv(time_yrs, status) ~ rx, data = os)
+ggsurvplot(fit_os, data = os, palette = PAL, conf.int = TRUE,
+           risk.table = TRUE, pval = TRUE, censor = FALSE,
+           xlab = "Years from randomisation", ylab = "Overall survival",
+           legend.title = "Arm", legend.labs = c("Obs", "Lev", "Lev+5FU"),
+           risk.table.height = 0.28, ggtheme = theme_minimal(base_size = 12))
+```
+
+```{r km-os-stats}
+lr_os <- survdiff(Surv(time_yrs, status) ~ rx, data = os)
+p_os <- 1 - pchisq(lr_os$chisq, df = length(lr_os$n) - 1)
+med <- summary(fit_os)$table[, "median"]
+cat("Log-rank p-value (overall survival):", signif(p_os, 3), "\n")
+cat("Median survival not reached where shown as NA (over half still alive).\n")
+print(round(med, 2))
+```
+
+The **Lev+5FU** curve sits clearly above the other two, and the log-rank test
+confirms the arms differ significantly. More than half of the Lev+5FU patients
+were still alive at the end of follow-up, so their median survival is not even
+reached. Levamisole alone tracks the control arm closely.
+
+## Recurrence-free survival (time to recurrence)
+
+```{r km-rfs}
+fit_rfs <- survfit(Surv(time_yrs, status) ~ rx, data = rfs)
+ggsurvplot(fit_rfs, data = rfs, palette = PAL, conf.int = TRUE,
+           risk.table = TRUE, pval = TRUE, censor = FALSE,
+           xlab = "Years from randomisation", ylab = "Recurrence-free survival",
+           legend.title = "Arm", legend.labs = c("Obs", "Lev", "Lev+5FU"),
+           risk.table.height = 0.28, ggtheme = theme_minimal(base_size = 12))
+```
+
+The same story appears earlier and even more strongly for recurrence: the
+combination arm keeps far more patients cancer-free, and most of its benefit is
+in preventing the cancer from coming back in the first place.
+
+# Cox proportional-hazards model
+
+The Kaplan-Meier curves compare arms on their own. The **Cox model** estimates
+the effect of treatment while adjusting for prognostic factors, and reports a
+**hazard ratio (HR)**: the relative rate of death. HR below 1 means lower risk.
+
+```{r cox}
+cox <- coxph(Surv(time_yrs, status) ~ rx + age + sex + nodes + extent +
+               differ + obstruct + perfor, data = os)
+tbl_regression(cox, exponentiate = TRUE,
+               label = list(rx ~ "Treatment arm", age ~ "Age",
+                            sex ~ "Sex", nodes ~ "Positive nodes",
+                            extent ~ "Local extent", differ ~ "Differentiation",
+                            obstruct ~ "Obstruction", perfor ~ "Perforation")) |>
+  modify_caption("**Adjusted hazard ratios for death (Cox model)**") |>
+  as_kable()
+```
+
+```{r cox-hr}
+hr <- tidy(cox, exponentiate = TRUE, conf.int = TRUE) |>
+  filter(term == "rxLev+5FU")
+cat(sprintf("Lev+5FU vs Obs: HR = %.2f (95%% CI %.2f to %.2f), p = %.4f\n",
+            hr$estimate, hr$conf.low, hr$conf.high, hr$p.value))
+```
+
+After adjusting for age, nodal burden, tumour extent and differentiation, the
+combination arm reduces the rate of death by roughly **one third** compared with
+observation, and the effect is statistically significant. The number of positive
+lymph nodes and the local extent of the tumour are the strongest prognostic
+drivers, as clinical knowledge would predict.
+
+```{r forest, fig.height=6}
+ggforest(cox, data = os, main = "Hazard ratios for death (95% CI)")
+```
+
+# Checking the proportional-hazards assumption
+
+The Cox model assumes a treatment's effect on the hazard is roughly constant
+over time. We test this with scaled Schoenfeld residuals.
+
+```{r ph}
+zph <- cox.zph(cox)
+print(zph)
+```
+
+```{r ph-plot, fig.height=4.2}
+plot(zph[1], col = ACC, lwd = 2)
+abline(h = 0, lty = 2, col = "grey50")
+title("Schoenfeld residuals for treatment arm")
+```
+
+The global test and the treatment term are not significant, so the
+proportional-hazards assumption is reasonable for the treatment effect: the
+hazard ratios above are a fair summary across the follow-up period.
+
+# A machine-learning benchmark: Random Survival Forest
+
+Cox is the clinical standard, but it assumes effects are linear and additive. A
+**Random Survival Forest (RSF)** is a machine-learning model that captures
+non-linearities and interactions automatically. We compare the two on
+discrimination, measured by the concordance index (C-index, higher is better),
+and read off which factors the forest finds most important.
+
+```{r rsf}
+set.seed(42)
+rsf_dat <- os |>
+  select(time_yrs, status, rx, age, sex, nodes, extent, differ,
+         obstruct, perfor) |> na.omit()
+rsf <- rfsrc(Surv(time_yrs, status) ~ ., data = rsf_dat,
+             ntree = 600, importance = TRUE)
+c_rsf <- 1 - rsf$err.rate[rsf$ntree]
+c_cox <- summary(cox)$concordance[1]
+cat(sprintf("C-index, Cox model           : %.3f\n", c_cox))
+cat(sprintf("C-index, Random Survival Forest: %.3f\n", c_rsf))
+```
+
+```{r vimp, fig.height=4.6}
+vi <- sort(rsf$importance, decreasing = TRUE)
+vidf <- data.frame(var = names(vi), imp = as.numeric(vi))
+ggplot(vidf, aes(reorder(var, imp), imp)) +
+  geom_col(fill = ACC) + coord_flip() +
+  labs(title = "Random Survival Forest: variable importance",
+       x = NULL, y = "Permutation importance (higher = more predictive)")
+```
+
+The two models reach **very similar discrimination**, which is reassuring: the
+straightforward Cox model is not leaving much on the table here. The forest
+ranks the same drivers at the top (nodal burden, tumour extent, age), and it
+also picks up treatment arm as informative. When a simple, interpretable model
+matches a flexible one, the simple model is usually the right choice to report.
+
+# Interpretation and clinical recommendation
+
+```{r summary, echo=FALSE}
+risk_red <- (1 - hr$estimate) * 100
+```
+
+- **The combination works.** Adjuvant **levamisole plus fluorouracil** clearly
+  delays recurrence and prolongs survival in stage B/C colon cancer, cutting the
+  rate of death by about **`r round(risk_red)`%** versus observation after
+  adjustment, consistent across the Kaplan-Meier curves, the log-rank tests and
+  the Cox model.
+- **Levamisole alone does not.** Its survival curve sits on top of the control
+  arm; the active ingredient is the fluorouracil combination.
+- **Most of the benefit is in preventing recurrence**, which is where the curves
+  separate earliest and widest.
+- **Target the highest-risk patients.** Patients with more than four positive
+  nodes and greater local extent have the worst prognosis and the most to gain,
+  so they are the clearest candidates for the combination regimen.
+
+# Limitations
+
+This is a single historical trial, so the specific drug regimen reflects the
+standard of its era rather than today's protocols; the value here is the method,
+not a current treatment recommendation. Some covariates have missing values
+(handled by complete-case analysis for the models). Survival analysis estimates
+associations adjusted for measured factors only; unmeasured confounding is
+controlled by randomisation for the treatment comparison but not for the
+observational prognostic factors.
+
+---
+
+*Built in R (survival, survminer, randomForestSRC, gtsummary) from the colon
+cancer adjuvant-therapy trial, a real published RCT with openly available
+patient-level data. Author: Kingsley Amegah.*

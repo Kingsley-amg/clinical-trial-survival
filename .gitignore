@@ -1,0 +1,13 @@
+# R
+.Rhistory
+.RData
+.Rproj.user/
+*.Rproj
+
+# knitr/rmarkdown intermediates
+*_files/
+*_cache/
+survival_analysis.log
+
+# OS
+.DS_Store
