@@ -69,7 +69,7 @@ bt <- os |>
                            extent ~ "Local extent", obstruct ~ "Obstruction",
                            perfor ~ "Perforation", sex ~ "Sex"),
               digits = all_categorical() ~ c(0, 1)) |>
-  add_p() |>
+  add_p(pvalue_fun = ~ style_pvalue(.x, digits = 3)) |>
   modify_header(label ~ "**Characteristic**") |>
   modify_caption("**Table 1. Baseline characteristics by treatment arm**")
 cat(strip_dash(as_kable(bt)), sep = "\n")

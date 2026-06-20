@@ -1631,7 +1631,7 @@ checks.</p>
                            extent ~ &quot;Local extent&quot;, obstruct ~ &quot;Obstruction&quot;,
                            perfor ~ &quot;Perforation&quot;, sex ~ &quot;Sex&quot;),
               digits = all_categorical() ~ c(0, 1)) |&gt;
-  add_p() |&gt;
+  add_p(pvalue_fun = ~ style_pvalue(.x, digits = 3)) |&gt;
   modify_header(label ~ &quot;**Characteristic**&quot;) |&gt;
   modify_caption(&quot;**Table 1. Baseline characteristics by treatment arm**&quot;)
 cat(strip_dash(as_kable(bt)), sep = &quot;\n&quot;)</code></pre>
@@ -1660,7 +1660,7 @@ arm</strong></caption>
 <td align="center">60 (53, 68)</td>
 <td align="center">61 (53, 69)</td>
 <td align="center">62 (52, 70)</td>
-<td align="center">0.8</td>
+<td align="center">0.804</td>
 </tr>
 <tr class="even">
 <td align="left">Sex</td>
@@ -1688,7 +1688,7 @@ arm</strong></caption>
 <td align="center">2 (1, 5)</td>
 <td align="center">2 (1, 5)</td>
 <td align="center">2 (1, 4)</td>
-<td align="center">0.6</td>
+<td align="center">0.550</td>
 </tr>
 <tr class="even">
 <td align="left">Unknown</td>
@@ -1702,7 +1702,7 @@ arm</strong></caption>
 <td align="center"></td>
 <td align="center"></td>
 <td align="center"></td>
-<td align="center">0.7</td>
+<td align="center">0.749</td>
 </tr>
 <tr class="even">
 <td align="left">1-3 nodes</td>
@@ -1723,7 +1723,7 @@ arm</strong></caption>
 <td align="center"></td>
 <td align="center"></td>
 <td align="center"></td>
-<td align="center">0.5</td>
+<td align="center">0.522</td>
 </tr>
 <tr class="odd">
 <td align="left">Moderate</td>
@@ -1758,7 +1758,7 @@ arm</strong></caption>
 <td align="center"></td>
 <td align="center"></td>
 <td align="center"></td>
-<td align="center">0.3</td>
+<td align="center">0.264</td>
 </tr>
 <tr class="even">
 <td align="left">Contiguous</td>
@@ -1793,14 +1793,14 @@ arm</strong></caption>
 <td align="center">63 (20.0%)</td>
 <td align="center">63 (20.3%)</td>
 <td align="center">54 (17.8%)</td>
-<td align="center">0.7</td>
+<td align="center">0.683</td>
 </tr>
 <tr class="odd">
 <td align="left">Perforation</td>
 <td align="center">9 (2.9%)</td>
 <td align="center">10 (3.2%)</td>
 <td align="center">8 (2.6%)</td>
-<td align="center">&gt;0.9</td>
+<td align="center">0.907</td>
 </tr>
 </tbody>
 </table>
