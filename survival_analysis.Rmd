@@ -28,7 +28,7 @@ ACC <- "#2a9d8f"
 # prints as the literal codepoint "<U+2014>". We strip these placeholders so the
 # tables read cleanly and contain no dash characters.
 strip_dash <- function(x)
-  gsub("&lt;U\\+201[0-9A-F]&gt;|<U\\+201[0-9A-F]>|[\\u2012\\u2013\\u2014\\u2015]", "", x)
+  gsub("&lt;U\\+[0-9A-F]{4}&gt;|<U\\+[0-9A-F]{4}>", "", x)
 dat <- read.csv("data/colon_clean.csv", stringsAsFactors = TRUE)
 dat$rx <- factor(dat$rx, levels = c("Obs", "Lev", "Lev+5FU"))
 os  <- subset(dat, etype == 2)   # overall survival (death)
@@ -67,7 +67,8 @@ bt <- os |>
               label = list(age ~ "Age (years)", nodes ~ "Positive nodes",
                            node4 ~ "Nodal burden", differ ~ "Differentiation",
                            extent ~ "Local extent", obstruct ~ "Obstruction",
-                           perfor ~ "Perforation", sex ~ "Sex")) |>
+                           perfor ~ "Perforation", sex ~ "Sex"),
+              digits = all_categorical() ~ c(0, 1)) |>
   add_p() |>
   modify_header(label ~ "**Characteristic**") |>
   modify_caption("**Table 1. Baseline characteristics by treatment arm**")

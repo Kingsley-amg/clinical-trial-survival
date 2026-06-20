@@ -1629,13 +1629,14 @@ checks.</p>
               label = list(age ~ &quot;Age (years)&quot;, nodes ~ &quot;Positive nodes&quot;,
                            node4 ~ &quot;Nodal burden&quot;, differ ~ &quot;Differentiation&quot;,
                            extent ~ &quot;Local extent&quot;, obstruct ~ &quot;Obstruction&quot;,
-                           perfor ~ &quot;Perforation&quot;, sex ~ &quot;Sex&quot;)) |&gt;
+                           perfor ~ &quot;Perforation&quot;, sex ~ &quot;Sex&quot;),
+              digits = all_categorical() ~ c(0, 1)) |&gt;
   add_p() |&gt;
   modify_header(label ~ &quot;**Characteristic**&quot;) |&gt;
   modify_caption(&quot;**Table 1. Baseline characteristics by treatment arm**&quot;)
 cat(strip_dash(as_kable(bt)), sep = &quot;\n&quot;)</code></pre>
 <table>
-<caption><strong>Table . Baseline characteristics by treatment
+<caption><strong>Table 1. Baseline characteristics by treatment
 arm</strong></caption>
 <colgroup>
 <col width="21%" />
@@ -1647,74 +1648,74 @@ arm</strong></caption>
 <thead>
 <tr class="header">
 <th align="left"><strong>Characteristic</strong></th>
-<th align="center"><strong>Obs</strong> N =</th>
-<th align="center"><strong>Lev</strong> N =</th>
-<th align="center"><strong>Lev+FU</strong> N =</th>
-<th align="center"><strong>p-vale</strong></th>
+<th align="center"><strong>Obs</strong> N = 315</th>
+<th align="center"><strong>Lev</strong> N = 310</th>
+<th align="center"><strong>Lev+5FU</strong> N = 304</th>
+<th align="center"><strong>p-value</strong></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td align="left">Age (years)</td>
-<td align="center">6 (, 68)</td>
-<td align="center">6 (, 69)</td>
-<td align="center">6 (, 7)</td>
-<td align="center">.8</td>
+<td align="center">60 (53, 68)</td>
+<td align="center">61 (53, 69)</td>
+<td align="center">62 (52, 70)</td>
+<td align="center">0.8</td>
 </tr>
 <tr class="even">
 <td align="left">Sex</td>
 <td align="center"></td>
 <td align="center"></td>
 <td align="center"></td>
-<td align="center">.8</td>
+<td align="center">0.028</td>
 </tr>
 <tr class="odd">
 <td align="left">Female</td>
-<td align="center">9 (7%)</td>
-<td align="center">(%)</td>
-<td align="center">6 (%)</td>
+<td align="center">149 (47.3%)</td>
+<td align="center">133 (42.9%)</td>
+<td align="center">163 (53.6%)</td>
 <td align="center"></td>
 </tr>
 <tr class="even">
 <td align="left">Male</td>
-<td align="center">66 (%)</td>
-<td align="center">77 (7%)</td>
-<td align="center">(6%)</td>
+<td align="center">166 (52.7%)</td>
+<td align="center">177 (57.1%)</td>
+<td align="center">141 (46.4%)</td>
 <td align="center"></td>
 </tr>
 <tr class="odd">
 <td align="left">Positive nodes</td>
-<td align="center">(, )</td>
-<td align="center">(, )</td>
-<td align="center">(, )</td>
-<td align="center">.6</td>
+<td align="center">2 (1, 5)</td>
+<td align="center">2 (1, 5)</td>
+<td align="center">2 (1, 4)</td>
+<td align="center">0.6</td>
 </tr>
 <tr class="even">
 <td align="left">Unknown</td>
-<td align="center"></td>
+<td align="center">3</td>
 <td align="center">6</td>
 <td align="center">9</td>
 <td align="center"></td>
 </tr>
 <tr class="odd">
-<td align="left">Nodal brden</td>
+<td align="left">Nodal burden</td>
 <td align="center"></td>
 <td align="center"></td>
 <td align="center"></td>
-<td align="center">.7</td>
+<td align="center">0.7</td>
 </tr>
 <tr class="even">
-<td align="left">- nodes</td>
-<td align="center">8 (7%)</td>
-<td align="center">(7%)</td>
-<td align="center">(7%)</td>
+<td align="left">1-3 nodes</td>
+<td align="center">228 (72.4%)</td>
+<td align="center">221 (71.3%)</td>
+<td align="center">225 (74.0%)</td>
 <td align="center"></td>
 </tr>
 <tr class="odd">
-<td align="left">&gt; nodes</td>
-<td align="center">87 (8%)</td>
-<td align="center">89 (9%)</td>
-<td align="center">79 (6%)</td>
+<td align="left">&gt;4 nodes</td>
+<td align="center">87 (27.6%)</td>
+<td align="center">89 (28.7%)</td>
+<td align="center">79 (26.0%)</td>
 <td align="center"></td>
 </tr>
 <tr class="even">
@@ -1722,33 +1723,33 @@ arm</strong></caption>
 <td align="center"></td>
 <td align="center"></td>
 <td align="center"></td>
-<td align="center">.</td>
+<td align="center">0.5</td>
 </tr>
 <tr class="odd">
 <td align="left">Moderate</td>
-<td align="center">9 (7%)</td>
-<td align="center">9 (7%)</td>
-<td align="center">(7%)</td>
+<td align="center">229 (74.4%)</td>
+<td align="center">219 (73.0%)</td>
+<td align="center">215 (72.1%)</td>
 <td align="center"></td>
 </tr>
 <tr class="even">
 <td align="left">Poor</td>
-<td align="center">(7%)</td>
-<td align="center">(%)</td>
-<td align="center">(8%)</td>
+<td align="center">52 (16.9%)</td>
+<td align="center">44 (14.7%)</td>
+<td align="center">54 (18.1%)</td>
 <td align="center"></td>
 </tr>
 <tr class="odd">
 <td align="left">Well</td>
-<td align="center">7 (8.8%)</td>
-<td align="center">7 (%)</td>
-<td align="center">9 (9.7%)</td>
+<td align="center">27 (8.8%)</td>
+<td align="center">37 (12.3%)</td>
+<td align="center">29 (9.7%)</td>
 <td align="center"></td>
 </tr>
 <tr class="even">
 <td align="left">Unknown</td>
 <td align="center">7</td>
-<td align="center"></td>
+<td align="center">10</td>
 <td align="center">6</td>
 <td align="center"></td>
 </tr>
@@ -1757,49 +1758,49 @@ arm</strong></caption>
 <td align="center"></td>
 <td align="center"></td>
 <td align="center"></td>
-<td align="center">.</td>
+<td align="center">0.3</td>
 </tr>
 <tr class="even">
-<td align="left">Contigos</td>
-<td align="center">(6.%)</td>
-<td align="center">(.9%)</td>
-<td align="center">(.6%)</td>
+<td align="left">Contiguous</td>
+<td align="center">20 (6.3%)</td>
+<td align="center">12 (3.9%)</td>
+<td align="center">11 (3.6%)</td>
 <td align="center"></td>
 </tr>
 <tr class="odd">
-<td align="left">Mscle</td>
-<td align="center">8 (%)</td>
-<td align="center">6 (%)</td>
-<td align="center">(%)</td>
+<td align="left">Muscle</td>
+<td align="center">38 (12.1%)</td>
+<td align="center">36 (11.6%)</td>
+<td align="center">32 (10.5%)</td>
 <td align="center"></td>
 </tr>
 <tr class="even">
 <td align="left">Serosa</td>
-<td align="center">9 (79%)</td>
-<td align="center">9 (8%)</td>
-<td align="center">(8%)</td>
+<td align="center">249 (79.0%)</td>
+<td align="center">259 (83.5%)</td>
+<td align="center">251 (82.6%)</td>
 <td align="center"></td>
 </tr>
 <tr class="odd">
-<td align="left">Sbmcosa</td>
-<td align="center">8 (.%)</td>
-<td align="center">(.%)</td>
-<td align="center">(.%)</td>
+<td align="left">Submucosa</td>
+<td align="center">8 (2.5%)</td>
+<td align="center">3 (1.0%)</td>
+<td align="center">10 (3.3%)</td>
 <td align="center"></td>
 </tr>
 <tr class="even">
-<td align="left">Obstrction</td>
-<td align="center">6 (%)</td>
-<td align="center">6 (%)</td>
-<td align="center">(8%)</td>
-<td align="center">.7</td>
+<td align="left">Obstruction</td>
+<td align="center">63 (20.0%)</td>
+<td align="center">63 (20.3%)</td>
+<td align="center">54 (17.8%)</td>
+<td align="center">0.7</td>
 </tr>
 <tr class="odd">
 <td align="left">Perforation</td>
-<td align="center">9 (.9%)</td>
-<td align="center">(.%)</td>
-<td align="center">8 (.6%)</td>
-<td align="center">&gt;.9</td>
+<td align="center">9 (2.9%)</td>
+<td align="center">10 (3.2%)</td>
+<td align="center">8 (2.6%)</td>
+<td align="center">&gt;0.9</td>
 </tr>
 </tbody>
 </table>
@@ -1879,14 +1880,14 @@ ct &lt;- tbl_regression(cox, exponentiate = TRUE,
   modify_caption(&quot;**Table 2. Adjusted hazard ratios for death (multivariable Cox model)**&quot;)
 cat(strip_dash(as_kable(ct)), sep = &quot;\n&quot;)</code></pre>
 <table>
-<caption><strong>Table . Adjsted hazard ratios for death (mltivariable
-Cox model)</strong></caption>
+<caption><strong>Table 2. Adjusted hazard ratios for death
+(multivariable Cox model)</strong></caption>
 <thead>
 <tr class="header">
 <th align="left"><strong>Characteristic</strong></th>
 <th align="center"><strong>HR</strong></th>
-<th align="center"><strong>9% CI</strong></th>
-<th align="center"><strong>p-vale</strong></th>
+<th align="center"><strong>95% CI</strong></th>
+<th align="center"><strong>p-value</strong></th>
 </tr>
 </thead>
 <tbody>
@@ -1898,27 +1899,27 @@ Cox model)</strong></caption>
 </tr>
 <tr class="even">
 <td align="left">Obs</td>
-<td align="center">.</td>
+<td align="center">1.00</td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
 <tr class="odd">
 <td align="left">Lev</td>
-<td align="center">.9</td>
-<td align="center">.7, .</td>
-<td align="center">.</td>
+<td align="center">0.91</td>
+<td align="center">0.73, 1.14</td>
+<td align="center">0.4</td>
 </tr>
 <tr class="even">
-<td align="left">Lev+FU</td>
-<td align="center">.67</td>
-<td align="center">., .86</td>
-<td align="center">.</td>
+<td align="left">Lev+5FU</td>
+<td align="center">0.67</td>
+<td align="center">0.53, 0.86</td>
+<td align="center">0.001</td>
 </tr>
 <tr class="odd">
 <td align="left">Age</td>
-<td align="center">.</td>
-<td align="center">., .</td>
-<td align="center">.9</td>
+<td align="center">1.01</td>
+<td align="center">1.00, 1.02</td>
+<td align="center">0.090</td>
 </tr>
 <tr class="even">
 <td align="left">Sex</td>
@@ -1928,21 +1929,21 @@ Cox model)</strong></caption>
 </tr>
 <tr class="odd">
 <td align="left">Female</td>
-<td align="center">.</td>
+<td align="center">1.00</td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
 <tr class="even">
 <td align="left">Male</td>
-<td align="center">.98</td>
-<td align="center">.8, .8</td>
-<td align="center">.8</td>
+<td align="center">0.98</td>
+<td align="center">0.81, 1.18</td>
+<td align="center">0.8</td>
 </tr>
 <tr class="odd">
 <td align="left">Positive nodes</td>
-<td align="center">.9</td>
-<td align="center">.7, .</td>
-<td align="center">&lt;.</td>
+<td align="center">1.09</td>
+<td align="center">1.07, 1.11</td>
+<td align="center">&lt;0.001</td>
 </tr>
 <tr class="even">
 <td align="left">Local extent</td>
@@ -1951,28 +1952,28 @@ Cox model)</strong></caption>
 <td align="center"></td>
 </tr>
 <tr class="odd">
-<td align="left">Contigos</td>
-<td align="center">.</td>
+<td align="left">Contiguous</td>
+<td align="center">1.00</td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
 <tr class="even">
-<td align="left">Mscle</td>
-<td align="center">.</td>
-<td align="center">., .7</td>
-<td align="center">.</td>
+<td align="left">Muscle</td>
+<td align="center">0.42</td>
+<td align="center">0.25, 0.71</td>
+<td align="center">0.001</td>
 </tr>
 <tr class="odd">
 <td align="left">Serosa</td>
-<td align="center">.7</td>
-<td align="center">.6, .7</td>
-<td align="center">.</td>
+<td align="center">0.71</td>
+<td align="center">0.46, 1.07</td>
+<td align="center">0.10</td>
 </tr>
 <tr class="even">
-<td align="left">Sbmcosa</td>
-<td align="center">.</td>
-<td align="center">.6, .7</td>
-<td align="center">.</td>
+<td align="left">Submucosa</td>
+<td align="center">0.22</td>
+<td align="center">0.06, 0.72</td>
+<td align="center">0.013</td>
 </tr>
 <tr class="odd">
 <td align="left">Differentiation</td>
@@ -1982,39 +1983,39 @@ Cox model)</strong></caption>
 </tr>
 <tr class="even">
 <td align="left">Moderate</td>
-<td align="center">.</td>
+<td align="center">1.00</td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
 <tr class="odd">
 <td align="left">Poor</td>
-<td align="center">.</td>
-<td align="center">., .7</td>
-<td align="center">.8</td>
+<td align="center">1.35</td>
+<td align="center">1.05, 1.73</td>
+<td align="center">0.018</td>
 </tr>
 <tr class="even">
 <td align="left">Well</td>
-<td align="center">.9</td>
-<td align="center">.79, .</td>
-<td align="center">.6</td>
+<td align="center">1.09</td>
+<td align="center">0.79, 1.52</td>
+<td align="center">0.6</td>
 </tr>
 <tr class="odd">
-<td align="left">Obstrction</td>
+<td align="left">Obstruction</td>
 <td align="center"></td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
 <tr class="even">
 <td align="left">No</td>
-<td align="center">.</td>
+<td align="center">1.00</td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
 <tr class="odd">
 <td align="left">Yes</td>
-<td align="center">.6</td>
-<td align="center">., .6</td>
-<td align="center">.</td>
+<td align="center">1.26</td>
+<td align="center">1.00, 1.60</td>
+<td align="center">0.051</td>
 </tr>
 <tr class="even">
 <td align="left">Perforation</td>
@@ -2024,15 +2025,15 @@ Cox model)</strong></caption>
 </tr>
 <tr class="odd">
 <td align="left">No</td>
-<td align="center">.</td>
+<td align="center">1.00</td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
 <tr class="even">
 <td align="left">Yes</td>
-<td align="center">.</td>
-<td align="center">.6, .77</td>
-<td align="center">.9</td>
+<td align="center">1.05</td>
+<td align="center">0.62, 1.77</td>
+<td align="center">0.9</td>
 </tr>
 </tbody>
 </table>
