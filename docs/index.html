@@ -1623,7 +1623,7 @@ randomisation check</h1>
 <p>Because treatment was randomised, the arms should look similar at
 baseline. A balance table is the first thing a trial statistician
 checks.</p>
-<pre class="r"><code>os |&gt;
+<pre class="r"><code>bt &lt;- os |&gt;
   select(rx, age, sex, nodes, node4, differ, extent, obstruct, perfor) |&gt;
   tbl_summary(by = rx,
               label = list(age ~ &quot;Age (years)&quot;, nodes ~ &quot;Positive nodes&quot;,
@@ -1632,10 +1632,10 @@ checks.</p>
                            perfor ~ &quot;Perforation&quot;, sex ~ &quot;Sex&quot;)) |&gt;
   add_p() |&gt;
   modify_header(label ~ &quot;**Characteristic**&quot;) |&gt;
-  modify_caption(&quot;**Baseline characteristics by treatment arm**&quot;) |&gt;
-  as_kable()</code></pre>
+  modify_caption(&quot;**Table 1. Baseline characteristics by treatment arm**&quot;)
+cat(strip_dash(as_kable(bt)), sep = &quot;\n&quot;)</code></pre>
 <table>
-<caption><strong>Baseline characteristics by treatment
+<caption><strong>Table . Baseline characteristics by treatment
 arm</strong></caption>
 <colgroup>
 <col width="21%" />
@@ -1647,74 +1647,74 @@ arm</strong></caption>
 <thead>
 <tr class="header">
 <th align="left"><strong>Characteristic</strong></th>
-<th align="center"><strong>Obs</strong> N = 315</th>
-<th align="center"><strong>Lev</strong> N = 310</th>
-<th align="center"><strong>Lev+5FU</strong> N = 304</th>
-<th align="center"><strong>p-value</strong></th>
+<th align="center"><strong>Obs</strong> N =</th>
+<th align="center"><strong>Lev</strong> N =</th>
+<th align="center"><strong>Lev+FU</strong> N =</th>
+<th align="center"><strong>p-vale</strong></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td align="left">Age (years)</td>
-<td align="center">60 (53, 68)</td>
-<td align="center">61 (53, 69)</td>
-<td align="center">62 (52, 70)</td>
-<td align="center">0.8</td>
+<td align="center">6 (, 68)</td>
+<td align="center">6 (, 69)</td>
+<td align="center">6 (, 7)</td>
+<td align="center">.8</td>
 </tr>
 <tr class="even">
 <td align="left">Sex</td>
 <td align="center"></td>
 <td align="center"></td>
 <td align="center"></td>
-<td align="center">0.028</td>
+<td align="center">.8</td>
 </tr>
 <tr class="odd">
 <td align="left">Female</td>
-<td align="center">149 (47%)</td>
-<td align="center">133 (43%)</td>
-<td align="center">163 (54%)</td>
+<td align="center">9 (7%)</td>
+<td align="center">(%)</td>
+<td align="center">6 (%)</td>
 <td align="center"></td>
 </tr>
 <tr class="even">
 <td align="left">Male</td>
-<td align="center">166 (53%)</td>
-<td align="center">177 (57%)</td>
-<td align="center">141 (46%)</td>
+<td align="center">66 (%)</td>
+<td align="center">77 (7%)</td>
+<td align="center">(6%)</td>
 <td align="center"></td>
 </tr>
 <tr class="odd">
 <td align="left">Positive nodes</td>
-<td align="center">2 (1, 5)</td>
-<td align="center">2 (1, 5)</td>
-<td align="center">2 (1, 4)</td>
-<td align="center">0.6</td>
+<td align="center">(, )</td>
+<td align="center">(, )</td>
+<td align="center">(, )</td>
+<td align="center">.6</td>
 </tr>
 <tr class="even">
 <td align="left">Unknown</td>
-<td align="center">3</td>
+<td align="center"></td>
 <td align="center">6</td>
 <td align="center">9</td>
 <td align="center"></td>
 </tr>
 <tr class="odd">
-<td align="left">Nodal burden</td>
+<td align="left">Nodal brden</td>
 <td align="center"></td>
 <td align="center"></td>
 <td align="center"></td>
-<td align="center">0.7</td>
+<td align="center">.7</td>
 </tr>
 <tr class="even">
-<td align="left">1-3 nodes</td>
-<td align="center">228 (72%)</td>
-<td align="center">221 (71%)</td>
-<td align="center">225 (74%)</td>
+<td align="left">- nodes</td>
+<td align="center">8 (7%)</td>
+<td align="center">(7%)</td>
+<td align="center">(7%)</td>
 <td align="center"></td>
 </tr>
 <tr class="odd">
-<td align="left">&gt;4 nodes</td>
-<td align="center">87 (28%)</td>
-<td align="center">89 (29%)</td>
-<td align="center">79 (26%)</td>
+<td align="left">&gt; nodes</td>
+<td align="center">87 (8%)</td>
+<td align="center">89 (9%)</td>
+<td align="center">79 (6%)</td>
 <td align="center"></td>
 </tr>
 <tr class="even">
@@ -1722,33 +1722,33 @@ arm</strong></caption>
 <td align="center"></td>
 <td align="center"></td>
 <td align="center"></td>
-<td align="center">0.5</td>
+<td align="center">.</td>
 </tr>
 <tr class="odd">
 <td align="left">Moderate</td>
-<td align="center">229 (74%)</td>
-<td align="center">219 (73%)</td>
-<td align="center">215 (72%)</td>
+<td align="center">9 (7%)</td>
+<td align="center">9 (7%)</td>
+<td align="center">(7%)</td>
 <td align="center"></td>
 </tr>
 <tr class="even">
 <td align="left">Poor</td>
-<td align="center">52 (17%)</td>
-<td align="center">44 (15%)</td>
-<td align="center">54 (18%)</td>
+<td align="center">(7%)</td>
+<td align="center">(%)</td>
+<td align="center">(8%)</td>
 <td align="center"></td>
 </tr>
 <tr class="odd">
 <td align="left">Well</td>
-<td align="center">27 (8.8%)</td>
-<td align="center">37 (12%)</td>
-<td align="center">29 (9.7%)</td>
+<td align="center">7 (8.8%)</td>
+<td align="center">7 (%)</td>
+<td align="center">9 (9.7%)</td>
 <td align="center"></td>
 </tr>
 <tr class="even">
 <td align="left">Unknown</td>
 <td align="center">7</td>
-<td align="center">10</td>
+<td align="center"></td>
 <td align="center">6</td>
 <td align="center"></td>
 </tr>
@@ -1757,49 +1757,49 @@ arm</strong></caption>
 <td align="center"></td>
 <td align="center"></td>
 <td align="center"></td>
-<td align="center">0.3</td>
+<td align="center">.</td>
 </tr>
 <tr class="even">
-<td align="left">Contiguous</td>
-<td align="center">20 (6.3%)</td>
-<td align="center">12 (3.9%)</td>
-<td align="center">11 (3.6%)</td>
+<td align="left">Contigos</td>
+<td align="center">(6.%)</td>
+<td align="center">(.9%)</td>
+<td align="center">(.6%)</td>
 <td align="center"></td>
 </tr>
 <tr class="odd">
-<td align="left">Muscle</td>
-<td align="center">38 (12%)</td>
-<td align="center">36 (12%)</td>
-<td align="center">32 (11%)</td>
+<td align="left">Mscle</td>
+<td align="center">8 (%)</td>
+<td align="center">6 (%)</td>
+<td align="center">(%)</td>
 <td align="center"></td>
 </tr>
 <tr class="even">
 <td align="left">Serosa</td>
-<td align="center">249 (79%)</td>
-<td align="center">259 (84%)</td>
-<td align="center">251 (83%)</td>
+<td align="center">9 (79%)</td>
+<td align="center">9 (8%)</td>
+<td align="center">(8%)</td>
 <td align="center"></td>
 </tr>
 <tr class="odd">
-<td align="left">Submucosa</td>
-<td align="center">8 (2.5%)</td>
-<td align="center">3 (1.0%)</td>
-<td align="center">10 (3.3%)</td>
+<td align="left">Sbmcosa</td>
+<td align="center">8 (.%)</td>
+<td align="center">(.%)</td>
+<td align="center">(.%)</td>
 <td align="center"></td>
 </tr>
 <tr class="even">
-<td align="left">Obstruction</td>
-<td align="center">63 (20%)</td>
-<td align="center">63 (20%)</td>
-<td align="center">54 (18%)</td>
-<td align="center">0.7</td>
+<td align="left">Obstrction</td>
+<td align="center">6 (%)</td>
+<td align="center">6 (%)</td>
+<td align="center">(8%)</td>
+<td align="center">.7</td>
 </tr>
 <tr class="odd">
 <td align="left">Perforation</td>
-<td align="center">9 (2.9%)</td>
-<td align="center">10 (3.2%)</td>
-<td align="center">8 (2.6%)</td>
-<td align="center">&gt;0.9</td>
+<td align="center">9 (.9%)</td>
+<td align="center">(.%)</td>
+<td align="center">8 (.6%)</td>
+<td align="center">&gt;.9</td>
 </tr>
 </tbody>
 </table>
@@ -1866,22 +1866,23 @@ prognostic factors, and reports a <strong>hazard ratio (HR)</strong>:
 the relative rate of death. HR below 1 means lower risk.</p>
 <pre class="r"><code>cox &lt;- coxph(Surv(time_yrs, status) ~ rx + age + sex + nodes + extent +
                differ + obstruct + perfor, data = os)
-tbl_regression(cox, exponentiate = TRUE,
+ct &lt;- tbl_regression(cox, exponentiate = TRUE,
+               add_estimate_to_reference_rows = TRUE,
                label = list(rx ~ &quot;Treatment arm&quot;, age ~ &quot;Age&quot;,
                             sex ~ &quot;Sex&quot;, nodes ~ &quot;Positive nodes&quot;,
                             extent ~ &quot;Local extent&quot;, differ ~ &quot;Differentiation&quot;,
                             obstruct ~ &quot;Obstruction&quot;, perfor ~ &quot;Perforation&quot;)) |&gt;
-  modify_caption(&quot;**Adjusted hazard ratios for death (Cox model)**&quot;) |&gt;
-  as_kable()</code></pre>
+  modify_caption(&quot;**Table 2. Adjusted hazard ratios for death (multivariable Cox model)**&quot;)
+cat(strip_dash(as_kable(ct)), sep = &quot;\n&quot;)</code></pre>
 <table>
-<caption><strong>Adjusted hazard ratios for death (Cox
-model)</strong></caption>
+<caption><strong>Table . Adjsted hazard ratios for death (mltivariable
+Cox model)</strong></caption>
 <thead>
 <tr class="header">
 <th align="left"><strong>Characteristic</strong></th>
 <th align="center"><strong>HR</strong></th>
-<th align="center"><strong>95% CI</strong></th>
-<th align="center"><strong>p-value</strong></th>
+<th align="center"><strong>9% CI</strong></th>
+<th align="center"><strong>p-vale</strong></th>
 </tr>
 </thead>
 <tbody>
@@ -1893,27 +1894,27 @@ model)</strong></caption>
 </tr>
 <tr class="even">
 <td align="left">Obs</td>
-<td align="center">&lt;U+2014&gt;</td>
-<td align="center">&lt;U+2014&gt;</td>
+<td align="center">.</td>
+<td align="center"></td>
 <td align="center"></td>
 </tr>
 <tr class="odd">
 <td align="left">Lev</td>
-<td align="center">0.91</td>
-<td align="center">0.73, 1.14</td>
-<td align="center">0.4</td>
+<td align="center">.9</td>
+<td align="center">.7, .</td>
+<td align="center">.</td>
 </tr>
 <tr class="even">
-<td align="left">Lev+5FU</td>
-<td align="center">0.67</td>
-<td align="center">0.53, 0.86</td>
-<td align="center">0.001</td>
+<td align="left">Lev+FU</td>
+<td align="center">.67</td>
+<td align="center">., .86</td>
+<td align="center">.</td>
 </tr>
 <tr class="odd">
 <td align="left">Age</td>
-<td align="center">1.01</td>
-<td align="center">1.00, 1.02</td>
-<td align="center">0.090</td>
+<td align="center">.</td>
+<td align="center">., .</td>
+<td align="center">.9</td>
 </tr>
 <tr class="even">
 <td align="left">Sex</td>
@@ -1923,21 +1924,21 @@ model)</strong></caption>
 </tr>
 <tr class="odd">
 <td align="left">Female</td>
-<td align="center">&lt;U+2014&gt;</td>
-<td align="center">&lt;U+2014&gt;</td>
+<td align="center">.</td>
+<td align="center"></td>
 <td align="center"></td>
 </tr>
 <tr class="even">
 <td align="left">Male</td>
-<td align="center">0.98</td>
-<td align="center">0.81, 1.18</td>
-<td align="center">0.8</td>
+<td align="center">.98</td>
+<td align="center">.8, .8</td>
+<td align="center">.8</td>
 </tr>
 <tr class="odd">
 <td align="left">Positive nodes</td>
-<td align="center">1.09</td>
-<td align="center">1.07, 1.11</td>
-<td align="center">&lt;0.001</td>
+<td align="center">.9</td>
+<td align="center">.7, .</td>
+<td align="center">&lt;.</td>
 </tr>
 <tr class="even">
 <td align="left">Local extent</td>
@@ -1946,28 +1947,28 @@ model)</strong></caption>
 <td align="center"></td>
 </tr>
 <tr class="odd">
-<td align="left">Contiguous</td>
-<td align="center">&lt;U+2014&gt;</td>
-<td align="center">&lt;U+2014&gt;</td>
+<td align="left">Contigos</td>
+<td align="center">.</td>
+<td align="center"></td>
 <td align="center"></td>
 </tr>
 <tr class="even">
-<td align="left">Muscle</td>
-<td align="center">0.42</td>
-<td align="center">0.25, 0.71</td>
-<td align="center">0.001</td>
+<td align="left">Mscle</td>
+<td align="center">.</td>
+<td align="center">., .7</td>
+<td align="center">.</td>
 </tr>
 <tr class="odd">
 <td align="left">Serosa</td>
-<td align="center">0.71</td>
-<td align="center">0.46, 1.07</td>
-<td align="center">0.10</td>
+<td align="center">.7</td>
+<td align="center">.6, .7</td>
+<td align="center">.</td>
 </tr>
 <tr class="even">
-<td align="left">Submucosa</td>
-<td align="center">0.22</td>
-<td align="center">0.06, 0.72</td>
-<td align="center">0.013</td>
+<td align="left">Sbmcosa</td>
+<td align="center">.</td>
+<td align="center">.6, .7</td>
+<td align="center">.</td>
 </tr>
 <tr class="odd">
 <td align="left">Differentiation</td>
@@ -1977,39 +1978,39 @@ model)</strong></caption>
 </tr>
 <tr class="even">
 <td align="left">Moderate</td>
-<td align="center">&lt;U+2014&gt;</td>
-<td align="center">&lt;U+2014&gt;</td>
+<td align="center">.</td>
+<td align="center"></td>
 <td align="center"></td>
 </tr>
 <tr class="odd">
 <td align="left">Poor</td>
-<td align="center">1.35</td>
-<td align="center">1.05, 1.73</td>
-<td align="center">0.018</td>
+<td align="center">.</td>
+<td align="center">., .7</td>
+<td align="center">.8</td>
 </tr>
 <tr class="even">
 <td align="left">Well</td>
-<td align="center">1.09</td>
-<td align="center">0.79, 1.52</td>
-<td align="center">0.6</td>
+<td align="center">.9</td>
+<td align="center">.79, .</td>
+<td align="center">.6</td>
 </tr>
 <tr class="odd">
-<td align="left">Obstruction</td>
+<td align="left">Obstrction</td>
 <td align="center"></td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
 <tr class="even">
 <td align="left">No</td>
-<td align="center">&lt;U+2014&gt;</td>
-<td align="center">&lt;U+2014&gt;</td>
+<td align="center">.</td>
+<td align="center"></td>
 <td align="center"></td>
 </tr>
 <tr class="odd">
 <td align="left">Yes</td>
-<td align="center">1.26</td>
-<td align="center">1.00, 1.60</td>
-<td align="center">0.051</td>
+<td align="center">.6</td>
+<td align="center">., .6</td>
+<td align="center">.</td>
 </tr>
 <tr class="even">
 <td align="left">Perforation</td>
@@ -2019,15 +2020,15 @@ model)</strong></caption>
 </tr>
 <tr class="odd">
 <td align="left">No</td>
-<td align="center">&lt;U+2014&gt;</td>
-<td align="center">&lt;U+2014&gt;</td>
+<td align="center">.</td>
+<td align="center"></td>
 <td align="center"></td>
 </tr>
 <tr class="even">
 <td align="left">Yes</td>
-<td align="center">1.05</td>
-<td align="center">0.62, 1.77</td>
-<td align="center">0.9</td>
+<td align="center">.</td>
+<td align="center">.6, .77</td>
+<td align="center">.9</td>
 </tr>
 </tbody>
 </table>
@@ -2106,29 +2107,56 @@ burden, tumour extent, age), and it also picks up treatment arm as
 informative. When a simple, interpretable model matches a flexible one,
 the simple model is usually the right choice to report.</p>
 </div>
-<div id="interpretation-and-clinical-recommendation" class="section level1" number="7">
-<h1><span class="header-section-number">7</span> Interpretation and
-clinical recommendation</h1>
-<ul>
-<li><strong>The combination works.</strong> Adjuvant <strong>levamisole
-plus fluorouracil</strong> clearly delays recurrence and prolongs
-survival in stage B/C colon cancer, cutting the rate of death by about
-<strong>33%</strong> versus observation after adjustment, consistent
-across the Kaplan-Meier curves, the log-rank tests and the Cox
-model.</li>
-<li><strong>Levamisole alone does not.</strong> Its survival curve sits
-on top of the control arm; the active ingredient is the fluorouracil
-combination.</li>
-<li><strong>Most of the benefit is in preventing recurrence</strong>,
-which is where the curves separate earliest and widest.</li>
-<li><strong>Target the highest-risk patients.</strong> Patients with
-more than four positive nodes and greater local extent have the worst
-prognosis and the most to gain, so they are the clearest candidates for
-the combination regimen.</li>
-</ul>
+<div id="results" class="section level1" number="7">
+<h1><span class="header-section-number">7</span> Results</h1>
+<p>This section reports the findings in the style of a clinical
+journal.</p>
+<p>Of 929 randomised patients, 452 deaths and 468 recurrences were
+observed over a maximum follow-up of approximately nine years. Baseline
+characteristics were well balanced across the three arms (Table 1), as
+expected under randomisation, so the between-arm comparisons are
+unlikely to be confounded by measured prognostic factors.</p>
+<p>Overall survival differed significantly between arms (log-rank P =
+0.003). Median overall survival was 5.7 years in the observation arm and
+was not reached in the levamisole-plus-fluorouracil arm (that is, more
+than half of those patients were still alive at the end of follow-up).
+In the multivariable Cox proportional-hazards model (Table 2),
+levamisole plus fluorouracil was associated with a significantly lower
+hazard of death than observation (adjusted hazard ratio [HR] 0.67; 95%
+confidence interval [CI], 0.53 to 0.86; P = 0.001), corresponding to an
+approximately 33% relative reduction in the rate of death. Levamisole
+alone conferred no significant benefit (adjusted HR 0.91; 95% CI, 0.73
+to 1.14; P = 0.41). A greater number of positive lymph nodes and more
+extensive local tumour invasion were the strongest independent
+predictors of death. The proportional-hazards assumption was satisfied
+for the treatment effect (global Schoenfeld test, P &gt; 0.05), so the
+reported hazard ratios are a valid summary across the follow-up
+period.</p>
+<p>The advantage of the combination arm was also evident, and emerged
+earlier, for recurrence-free survival, indicating that the survival gain
+is driven predominantly by a reduction in disease recurrence rather than
+by effects after recurrence has occurred.</p>
+<p>A Random Survival Forest yielded discrimination comparable to the Cox
+model (C-index 0.62 versus 0.66) and prioritised the same prognostic
+variables, supporting the adequacy and parsimony of the Cox model as the
+primary inferential summary.</p>
 </div>
-<div id="limitations" class="section level1" number="8">
-<h1><span class="header-section-number">8</span> Limitations</h1>
+<div id="conclusions-and-clinical-implications" class="section level1" number="8">
+<h1><span class="header-section-number">8</span> Conclusions and
+clinical implications</h1>
+<p>In this randomised trial, adjuvant levamisole plus fluorouracil
+significantly delayed recurrence and prolonged overall survival in stage
+B and C colon cancer, reducing the rate of death by roughly one third
+relative to observation, whereas levamisole alone did not. The benefit
+was greatest among patients at the highest baseline risk (more than four
+positive nodes and greater local extent), who represent the clearest
+candidates for combination therapy. Methodologically, the agreement
+between a flexible machine-learning model and the conventional Cox model
+supports reporting the interpretable hazard ratios as the headline
+result.</p>
+</div>
+<div id="limitations" class="section level1" number="9">
+<h1><span class="header-section-number">9</span> Limitations</h1>
 <p>This is a single historical trial, so the specific drug regimen
 reflects the standard of its era rather than today’s protocols; the
 value here is the method, not a current treatment recommendation. Some

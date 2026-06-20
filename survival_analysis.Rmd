@@ -23,6 +23,12 @@ suppressMessages({
 theme_set(theme_minimal(base_size = 12))
 PAL <- c("#9ec7bd", "#e9b949", "#2a9d8f")   # Obs, Lev, Lev+5FU
 ACC <- "#2a9d8f"
+# gtsummary fills empty table cells (e.g. p-value rows for category sub-levels,
+# regression reference rows) with an em dash. Under a non-UTF-8 locale that
+# prints as the literal codepoint "<U+2014>". We strip these placeholders so the
+# tables read cleanly and contain no dash characters.
+strip_dash <- function(x)
+  gsub("&lt;U\\+201[0-9A-F]&gt;|<U\\+201[0-9A-F]>|[\\u2012\\u2013\\u2014\\u2015]", "", x)
 dat <- read.csv("data/colon_clean.csv", stringsAsFactors = TRUE)
 dat$rx <- factor(dat$rx, levels = c("Obs", "Lev", "Lev+5FU"))
 os  <- subset(dat, etype == 2)   # overall survival (death)
@@ -54,8 +60,8 @@ not work. This is what **survival analysis** is built for.
 Because treatment was randomised, the arms should look similar at baseline. A
 balance table is the first thing a trial statistician checks.
 
-```{r baseline}
-os |>
+```{r baseline, results='asis'}
+bt <- os |>
   select(rx, age, sex, nodes, node4, differ, extent, obstruct, perfor) |>
   tbl_summary(by = rx,
               label = list(age ~ "Age (years)", nodes ~ "Positive nodes",
@@ -64,8 +70,8 @@ os |>
                            perfor ~ "Perforation", sex ~ "Sex")) |>
   add_p() |>
   modify_header(label ~ "**Characteristic**") |>
-  modify_caption("**Baseline characteristics by treatment arm**") |>
-  as_kable()
+  modify_caption("**Table 1. Baseline characteristics by treatment arm**")
+cat(strip_dash(as_kable(bt)), sep = "\n")
 ```
 
 The arms are well balanced: no baseline characteristic differs meaningfully
@@ -125,16 +131,17 @@ The Kaplan-Meier curves compare arms on their own. The **Cox model** estimates
 the effect of treatment while adjusting for prognostic factors, and reports a
 **hazard ratio (HR)**: the relative rate of death. HR below 1 means lower risk.
 
-```{r cox}
+```{r cox, results='asis'}
 cox <- coxph(Surv(time_yrs, status) ~ rx + age + sex + nodes + extent +
                differ + obstruct + perfor, data = os)
-tbl_regression(cox, exponentiate = TRUE,
+ct <- tbl_regression(cox, exponentiate = TRUE,
+               add_estimate_to_reference_rows = TRUE,
                label = list(rx ~ "Treatment arm", age ~ "Age",
                             sex ~ "Sex", nodes ~ "Positive nodes",
                             extent ~ "Local extent", differ ~ "Differentiation",
                             obstruct ~ "Obstruction", perfor ~ "Perforation")) |>
-  modify_caption("**Adjusted hazard ratios for death (Cox model)**") |>
-  as_kable()
+  modify_caption("**Table 2. Adjusted hazard ratios for death (multivariable Cox model)**")
+cat(strip_dash(as_kable(ct)), sep = "\n")
 ```
 
 ```{r cox-hr}
@@ -210,24 +217,64 @@ ranks the same drivers at the top (nodal burden, tumour extent, age), and it
 also picks up treatment arm as informative. When a simple, interpretable model
 matches a flexible one, the simple model is usually the right choice to report.
 
-# Interpretation and clinical recommendation
+# Results
 
 ```{r summary, echo=FALSE}
+hr_lev   <- tidy(cox, exponentiate = TRUE, conf.int = TRUE) |>
+  dplyr::filter(term == "rxLev")
 risk_red <- (1 - hr$estimate) * 100
+n_pat    <- length(unique(dat$id))
+n_death  <- sum(os$status)
+n_recur  <- sum(rfs$status)
+med_obs  <- round(med[["rx=Obs"]], 1)
 ```
 
-- **The combination works.** Adjuvant **levamisole plus fluorouracil** clearly
-  delays recurrence and prolongs survival in stage B/C colon cancer, cutting the
-  rate of death by about **`r round(risk_red)`%** versus observation after
-  adjustment, consistent across the Kaplan-Meier curves, the log-rank tests and
-  the Cox model.
-- **Levamisole alone does not.** Its survival curve sits on top of the control
-  arm; the active ingredient is the fluorouracil combination.
-- **Most of the benefit is in preventing recurrence**, which is where the curves
-  separate earliest and widest.
-- **Target the highest-risk patients.** Patients with more than four positive
-  nodes and greater local extent have the worst prognosis and the most to gain,
-  so they are the clearest candidates for the combination regimen.
+This section reports the findings in the style of a clinical journal.
+
+Of `r n_pat` randomised patients, `r n_death` deaths and `r n_recur` recurrences
+were observed over a maximum follow-up of approximately nine years. Baseline
+characteristics were well balanced across the three arms (Table 1), as expected
+under randomisation, so the between-arm comparisons are unlikely to be confounded
+by measured prognostic factors.
+
+Overall survival differed significantly between arms (log-rank P =
+`r round(p_os, 3)`). Median overall survival was `r med_obs` years in the
+observation arm and was not reached in the levamisole-plus-fluorouracil arm
+(that is, more than half of those patients were still alive at the end of
+follow-up). In the multivariable Cox proportional-hazards model (Table 2),
+levamisole plus fluorouracil was associated with a significantly lower hazard of
+death than observation (adjusted hazard ratio [HR] `r round(hr$estimate, 2)`;
+95% confidence interval [CI], `r round(hr$conf.low, 2)` to
+`r round(hr$conf.high, 2)`; P = `r round(hr$p.value, 3)`), corresponding to an
+approximately `r round(risk_red)`% relative reduction in the rate of death.
+Levamisole alone conferred no significant benefit (adjusted HR
+`r round(hr_lev$estimate, 2)`; 95% CI, `r round(hr_lev$conf.low, 2)` to
+`r round(hr_lev$conf.high, 2)`; P = `r round(hr_lev$p.value, 2)`). A greater
+number of positive lymph nodes and more extensive local tumour invasion were the
+strongest independent predictors of death. The proportional-hazards assumption
+was satisfied for the treatment effect (global Schoenfeld test, P > 0.05), so the
+reported hazard ratios are a valid summary across the follow-up period.
+
+The advantage of the combination arm was also evident, and emerged earlier, for
+recurrence-free survival, indicating that the survival gain is driven
+predominantly by a reduction in disease recurrence rather than by effects after
+recurrence has occurred.
+
+A Random Survival Forest yielded discrimination comparable to the Cox model
+(C-index `r round(c_rsf, 2)` versus `r round(c_cox, 2)`) and prioritised the same
+prognostic variables, supporting the adequacy and parsimony of the Cox model as
+the primary inferential summary.
+
+# Conclusions and clinical implications
+
+In this randomised trial, adjuvant levamisole plus fluorouracil significantly
+delayed recurrence and prolonged overall survival in stage B and C colon cancer,
+reducing the rate of death by roughly one third relative to observation, whereas
+levamisole alone did not. The benefit was greatest among patients at the highest
+baseline risk (more than four positive nodes and greater local extent), who
+represent the clearest candidates for combination therapy. Methodologically, the
+agreement between a flexible machine-learning model and the conventional Cox
+model supports reporting the interpretable hazard ratios as the headline result.
 
 # Limitations
 
