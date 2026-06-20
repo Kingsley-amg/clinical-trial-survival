@@ -74,10 +74,11 @@ bt <- os |>
 cat(strip_dash(as_kable(bt)), sep = "\n")
 ```
 
-The arms are well balanced: no baseline characteristic differs meaningfully
-across them (all p-values are large). That is exactly what randomisation should
-deliver, and it means any later difference in outcomes can be attributed to
-treatment rather than to sicker patients landing in one arm.
+Baseline demographic and clinical characteristics were comparable across the
+three arms, with no statistically significant between-arm differences (all
+P > 0.05; Table 1). This balance is the expected consequence of randomisation and
+supports attributing any subsequent difference in outcomes to treatment rather
+than to differences in case mix.
 
 # Kaplan-Meier survival curves
 
@@ -105,10 +106,13 @@ cat("Median survival not reached where shown as NA (over half still alive).\n")
 print(round(med, 2))
 ```
 
-The **Lev+5FU** curve sits clearly above the other two, and the log-rank test
-confirms the arms differ significantly. More than half of the Lev+5FU patients
-were still alive at the end of follow-up, so their median survival is not even
-reached. Levamisole alone tracks the control arm closely.
+Overall survival was highest in the levamisole-plus-fluorouracil arm, whose
+Kaplan-Meier curve lay consistently above those of the observation and
+levamisole-only arms, and the difference across arms was statistically
+significant (log-rank P = 0.003). Median overall survival was not reached in the
+combination arm, indicating that more than half of these patients remained alive
+at the end of follow-up, compared with 5.7 years under observation. Levamisole
+alone tracked the control arm closely.
 
 ## Recurrence-free survival (time to recurrence)
 
@@ -121,9 +125,10 @@ ggsurvplot(fit_rfs, data = rfs, palette = PAL, conf.int = TRUE,
            risk.table.height = 0.28, ggtheme = theme_minimal(base_size = 12))
 ```
 
-The same story appears earlier and even more strongly for recurrence: the
-combination arm keeps far more patients cancer-free, and most of its benefit is
-in preventing the cancer from coming back in the first place.
+A consistent and earlier separation favoured the combination arm for
+recurrence-free survival, with the curves diverging within the first two years.
+This pattern indicates that the treatment acts principally by preventing or
+delaying disease recurrence.
 
 # Cox proportional-hazards model
 
@@ -151,11 +156,14 @@ cat(sprintf("Lev+5FU vs Obs: HR = %.2f (95%% CI %.2f to %.2f), p = %.4f\n",
             hr$estimate, hr$conf.low, hr$conf.high, hr$p.value))
 ```
 
-After adjusting for age, nodal burden, tumour extent and differentiation, the
-combination arm reduces the rate of death by roughly **one third** compared with
-observation, and the effect is statistically significant. The number of positive
-lymph nodes and the local extent of the tumour are the strongest prognostic
-drivers, as clinical knowledge would predict.
+After adjustment for age, sex, nodal burden, local extent, tumour
+differentiation, obstruction and perforation, levamisole plus fluorouracil
+remained associated with a significantly reduced hazard of death relative to
+observation (adjusted HR 0.67; 95% CI, 0.53 to 0.86; P = 0.001), corresponding to
+an approximately one third lower rate of death. Levamisole alone showed no
+significant effect. The number of positive lymph nodes and the local extent of
+the tumour were the strongest independent prognostic factors, consistent with
+established clinical knowledge.
 
 ```{r forest, fig.height=6}
 ggforest(cox, data = os, main = "Hazard ratios for death (95% CI)")
@@ -177,9 +185,11 @@ abline(h = 0, lty = 2, col = "grey50")
 title("Schoenfeld residuals for treatment arm")
 ```
 
-The global test and the treatment term are not significant, so the
-proportional-hazards assumption is reasonable for the treatment effect: the
-hazard ratios above are a fair summary across the follow-up period.
+Neither the global test nor the treatment-specific test of the scaled Schoenfeld
+residuals reached statistical significance, indicating no material violation of
+the proportional-hazards assumption. The hazard ratios above can therefore be
+interpreted as constant, valid summaries of the treatment effect over the
+follow-up period.
 
 # A machine-learning benchmark: Random Survival Forest
 
@@ -211,11 +221,12 @@ ggplot(vidf, aes(reorder(var, imp), imp)) +
        x = NULL, y = "Permutation importance (higher = more predictive)")
 ```
 
-The two models reach **very similar discrimination**, which is reassuring: the
-straightforward Cox model is not leaving much on the table here. The forest
-ranks the same drivers at the top (nodal burden, tumour extent, age), and it
-also picks up treatment arm as informative. When a simple, interpretable model
-matches a flexible one, the simple model is usually the right choice to report.
+Discrimination was comparable between the two approaches (C-index 0.66 for both),
+and the Random Survival Forest ranked the same variables as most important (nodal
+burden, local extent and age), while also identifying treatment arm as
+informative. The concordance between a flexible machine-learning model and the
+conventional Cox model supports reporting the interpretable Cox hazard ratios as
+the primary result.
 
 # Results
 
